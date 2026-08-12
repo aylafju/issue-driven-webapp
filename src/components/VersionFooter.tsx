@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 function formatDate(date: Date): string {
   const dd = String(date.getDate()).padStart(2, "0");
@@ -8,14 +8,16 @@ function formatDate(date: Date): string {
   return `${dd}.${mm}.${date.getFullYear()}`;
 }
 
-// Datum erst nach dem Mount setzen, damit Server- und Client-HTML
-// beim Hydrieren identisch sind.
-export function VersionFooter() {
-  const [date, setDate] = useState<string | null>(null);
+const emptySubscribe = () => () => {};
 
-  useEffect(() => {
-    setDate(formatDate(new Date()));
-  }, []);
+// useSyncExternalStore liefert auf dem Server null und im Browser das Datum –
+// so bleiben Server- und Client-HTML beim Hydrieren identisch.
+export function VersionFooter() {
+  const date = useSyncExternalStore(
+    emptySubscribe,
+    () => formatDate(new Date()),
+    () => null,
+  );
 
   return (
     <footer className="fixed bottom-0 w-full p-3 text-center text-xs text-neutral-400">
