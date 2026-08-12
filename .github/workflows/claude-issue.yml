@@ -1,0 +1,55 @@
+name: Claude – Issue umsetzen
+
+# Läuft automatisch bei jedem neuen Issue (oder wenn "@claude" in einem
+# Issue-Kommentar erwähnt wird) und lässt Claude das Ticket umsetzen:
+# implementieren, testen, dokumentieren und einen Pull Request eröffnen.
+on:
+  issues:
+    types: [opened, reopened]
+  issue_comment:
+    types: [created]
+
+jobs:
+  implement:
+    if: >-
+      github.event_name == 'issues' ||
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude'))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write        # Code schreiben, Branches anlegen
+      pull-requests: write   # Pull Requests eröffnen
+      issues: write          # Im Issue kommentieren / verlinken
+      id-token: write        # OIDC-Auth für die Claude GitHub App
+      actions: read          # CI-Ergebnisse lesen (Debugging)
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          # Nur EINES der beiden Secrets muss gesetzt sein:
+          # ANTHROPIC_API_KEY (API-Guthaben) ODER CLAUDE_CODE_OAUTH_TOKEN (Pro/Max-Abo).
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            Du bist der automatisierte Entwickler dieses Repositories.
+            Setze das GitHub-Issue #${{ github.event.issue.number }}
+            ("${{ github.event.issue.title }}") in diesem Repository um.
+
+            Vorgehen:
+            1. Lies das vollständige Issue (Beschreibung + alle Kommentare).
+            2. Lies CLAUDE.md und halte dich an die dort definierten Regeln.
+            3. Implementiere die Anforderung vollständig.
+            4. Schreibe bzw. aktualisiere Tests und führe sie aus – alle Tests
+               müssen grün sein, bevor du fertig bist.
+            5. Aktualisiere die Dokumentation (README.md bzw. docs/), wenn sich
+               Verhalten, Bedienung oder Setup ändern.
+            6. Eröffne einen Pull Request gegen main mit einer klaren
+               Beschreibung (Was/Warum/Wie getestet) und der Zeile
+               "Closes #${{ github.event.issue.number }}".
+            7. Hinterlasse im Issue einen kurzen Kommentar mit dem Link zum PR.
+
+            Wenn das Issue unklar oder nicht umsetzbar ist: implementiere nichts,
+            sondern stelle deine Rückfragen als Kommentar im Issue.
+          claude_args: "--max-turns 50"

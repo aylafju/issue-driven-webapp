@@ -1,0 +1,30 @@
+name: Feature / Änderung
+description: Ein Ticket, das Claude automatisch umsetzt
+title: "[Feature] "
+labels: []
+body:
+  - type: textarea
+    id: beschreibung
+    attributes:
+      label: Beschreibung
+      description: Was soll umgesetzt werden? Je konkreter, desto besser das Ergebnis.
+      placeholder: "Als Nutzer möchte ich ..., damit ..."
+    validations:
+      required: true
+  - type: textarea
+    id: akzeptanzkriterien
+    attributes:
+      label: Akzeptanzkriterien
+      description: Woran erkennt man, dass das Ticket fertig ist?
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: false
+  - type: textarea
+    id: hinweise
+    attributes:
+      label: Technische Hinweise (optional)
+      description: Vorgaben zu Umsetzung, Design oder Einschränkungen.
+    validations:
+      required: false

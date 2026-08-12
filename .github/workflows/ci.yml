@@ -1,0 +1,45 @@
+name: CI
+
+# Tests und Build für jeden Pull Request und für Pushes auf main.
+# Solange der Tech-Stack noch nicht festgelegt ist, sind die Schritte
+# tolerant: Ohne package.json wird nichts ausgeführt.
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Node-Projekt erkennen
+        id: detect
+        run: |
+          if [ -f package.json ]; then
+            echo "node=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "node=false" >> "$GITHUB_OUTPUT"
+            echo "Kein package.json gefunden – CI-Schritte werden übersprungen."
+          fi
+
+      - name: Node einrichten
+        if: steps.detect.outputs.node == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Abhängigkeiten installieren
+        if: steps.detect.outputs.node == 'true'
+        run: npm ci
+
+      - name: Tests ausführen
+        if: steps.detect.outputs.node == 'true'
+        run: npm test --if-present
+
+      - name: Build prüfen
+        if: steps.detect.outputs.node == 'true'
+        run: npm run build --if-present

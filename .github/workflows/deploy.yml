@@ -1,0 +1,54 @@
+name: Deploy (GitHub Pages)
+
+# Deployt automatisch bei jedem Push auf main (z. B. nach dem Merge eines
+# Claude-PRs). Baut das Projekt, falls ein Build-Script existiert, und
+# veröffentlicht dist/ bzw. build/ – sonst das Repo-Root (statisches HTML).
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Bauen (falls Node-Projekt)
+        run: |
+          if [ -f package.json ]; then
+            npm ci
+            npm run build --if-present
+          fi
+
+      - name: Publish-Verzeichnis bestimmen
+        id: dir
+        run: |
+          if [ -d dist ]; then
+            echo "path=dist" >> "$GITHUB_OUTPUT"
+          elif [ -d build ]; then
+            echo "path=build" >> "$GITHUB_OUTPUT"
+          else
+            echo "path=." >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ steps.dir.outputs.path }}
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
