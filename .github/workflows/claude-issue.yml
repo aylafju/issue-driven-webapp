@@ -22,7 +22,7 @@ jobs:
       id-token: write        # OIDC-Auth für die Claude GitHub App
       actions: read          # CI-Ergebnisse lesen (Debugging)
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
