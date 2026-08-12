@@ -41,3 +41,10 @@ Pull Request.
 Noch nicht festgelegt – Ausgangspunkt ist statisches HTML
 ([index.html](index.html)). Der Stack wird per Issue entschieden; die
 Workflows erkennen ein Node-Projekt (package.json) automatisch.
+
+## Version
+
+Der aktuelle Versionsstand wird im Footer von [index.html](index.html)
+angezeigt. Bei Änderungen, die eine neue Version rechtfertigen, wird die
+Versionsnummer dort manuell nach [SemVer](https://semver.org/lang/de/)
+hochgezählt.
