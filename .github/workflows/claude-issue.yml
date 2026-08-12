@@ -45,10 +45,12 @@ jobs:
                müssen grün sein, bevor du fertig bist.
             5. Aktualisiere die Dokumentation (README.md bzw. docs/), wenn sich
                Verhalten, Bedienung oder Setup ändern.
-            6. Eröffne einen Pull Request gegen main mit einer klaren
+            6. Eröffne einen Pull Request gegen main mit `gh pr create`
+               (die gh-CLI ist bereits authentifiziert) – mit klarer
                Beschreibung (Was/Warum/Wie getestet) und der Zeile
                "Closes #${{ github.event.issue.number }}".
-            7. Hinterlasse im Issue einen kurzen Kommentar mit dem Link zum PR.
+            7. Hinterlasse mit `gh issue comment` einen kurzen Kommentar im
+               Issue mit dem Link zum PR.
 
             Wenn das Issue unklar oder nicht umsetzbar ist: implementiere nichts,
             sondern stelle deine Rückfragen als Kommentar im Issue.
@@ -57,4 +59,4 @@ jobs:
           claude_args: |
             --max-turns 50
             --permission-mode acceptEdits
-            --allowedTools "Read,Write,Edit,Glob,Grep,Bash(git:*),Bash(npm:*),Bash(npx:*),Bash(node:*),Bash(mkdir:*),Bash(ls:*),Bash(cat:*),mcp__github_file_ops__commit_files,mcp__github_file_ops__create_pull_request,mcp__github_comment__create_issue_comment,mcp__github_comment__update_claude_comment"
+            --allowedTools "Read,Write,Edit,Glob,Grep,Bash(git:*),Bash(gh:*),Bash(npm:*),Bash(npx:*),Bash(node:*),Bash(mkdir:*),Bash(ls:*),Bash(cat:*),mcp__github_file_ops__commit_files,mcp__github_file_ops__delete_files,mcp__github_comment__update_claude_comment"
