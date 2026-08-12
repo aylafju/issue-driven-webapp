@@ -57,6 +57,6 @@ jobs:
           # Im Automatik-Modus sind Schreib-/Bash-Tools standardmäßig gesperrt –
           # hier explizit freigeben, sonst kann Claude weder editieren noch pushen.
           claude_args: |
-            --max-turns 150
+            --max-turns 250
             --permission-mode acceptEdits
             --allowedTools "Read,Write,Edit,Glob,Grep,Bash(git:*),Bash(gh:*),Bash(npm:*),Bash(npx:*),Bash(node:*),Bash(mkdir:*),Bash(ls:*),Bash(cat:*),Bash(cd:*),Bash(rm:*),Bash(mv:*),Bash(cp:*),Bash(touch:*),Bash(sed:*),Bash(grep:*),Bash(find:*),Bash(echo:*),Bash(head:*),Bash(tail:*),Bash(wc:*),mcp__github_file_ops__commit_files,mcp__github_file_ops__delete_files,mcp__github_comment__update_claude_comment"
