@@ -4,36 +4,35 @@ import { describe, expect, it } from "vitest";
 import LoginPage from "./page";
 
 describe("Login-Seite", () => {
-  it("zeigt E-Mail- und Passwort-Feld sowie Link zur Registrierung", async () => {
+  it("zeigt die Auswahl der Anmeldedienste als Popup", async () => {
     render(await LoginPage({ searchParams: Promise.resolve({}) }));
 
-    expect(screen.getByLabelText(/e-mail/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/passwort/i)).toBeInTheDocument();
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /anmelden/i }),
+      screen.getByRole("button", { name: /mit google anmelden/i }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: /registrieren/i }),
+      screen.getByRole("button", { name: /mit facebook anmelden/i }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /mit x anmelden/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("zeigt keine E-Mail- oder Passwort-Felder mehr", async () => {
+    render(await LoginPage({ searchParams: Promise.resolve({}) }));
+
+    expect(screen.queryByLabelText(/e-mail/i)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/passwort/i)).not.toBeInTheDocument();
   });
 
   it("zeigt eine Fehlermeldung aus den searchParams", async () => {
     render(
       await LoginPage({
-        searchParams: Promise.resolve({ error: "Ungültige Anmeldedaten" }),
+        searchParams: Promise.resolve({ error: "Etwas ist schiefgelaufen." }),
       }),
     );
 
-    expect(screen.getByText(/ungültige anmeldedaten/i)).toBeInTheDocument();
-  });
-
-  it("zeigt eine Erfolgsmeldung aus den searchParams", async () => {
-    render(
-      await LoginPage({
-        searchParams: Promise.resolve({ message: "Konto erstellt" }),
-      }),
-    );
-
-    expect(screen.getByText(/konto erstellt/i)).toBeInTheDocument();
+    expect(screen.getByText(/etwas ist schiefgelaufen/i)).toBeInTheDocument();
   });
 });
