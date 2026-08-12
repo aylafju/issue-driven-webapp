@@ -43,6 +43,13 @@ immer auch in `.env.example` dokumentieren.
 - Server-Logik (Auth-Checks, Premium-Gates, DB-Zugriffe) gehört auf die
   Server-Seite (Server Components, Route Handler, Middleware) – niemals
   sicherheitsrelevante Prüfungen nur im Client.
+- Datenbank: Für JEDE neue Tabelle Row Level Security aktivieren
+  (`alter table ... enable row level security;`) und passende Policies
+  definieren (Standard: User sehen/ändern nur eigene Zeilen). Tabellen ohne
+  RLS-Policies dürfen nicht in einen PR. Schema-Änderungen immer als
+  SQL-Migration unter `supabase/migrations/` ins Repo legen und im PR
+  beschreiben, damit sie nachvollziehbar im Supabase-Dashboard (SQL Editor)
+  ausgeführt werden können.
 - Sprache: UI-Texte und Doku auf Deutsch, Code/Kommentare auf Englisch.
 
 ## Unklare Issues
