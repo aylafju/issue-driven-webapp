@@ -3,7 +3,7 @@
 Eine Web-App, die vollständig **issue-getrieben** entwickelt wird: Features und
 Bugfixes werden als GitHub-Issues angelegt und von Claude automatisch
 implementiert, getestet, dokumentiert und als Pull Request bereitgestellt.
-Nach dem Merge wird automatisch deployt.
+Nach dem Merge deployt Vercel automatisch.
 
 ## Der Prozess
 
@@ -14,37 +14,37 @@ Nach dem Merge wird automatisch deployt.
    setzt das Issue um, schreibt Tests, aktualisiert die Doku und eröffnet
    einen Pull Request. Rückfragen stellt Claude als Issue-Kommentar
    (antworten mit `@claude ...` startet einen neuen Lauf).
-3. **Review & Merge** – PR prüfen und mergen (das Issue schließt sich
-   automatisch über `Closes #<nr>`).
-4. **Auto-Deploy** – der Merge auf `main` löst
-   [deploy.yml](.github/workflows/deploy.yml) aus und veröffentlicht die App
-   auf GitHub Pages.
+3. **Review & Merge** – PR prüfen (Vercel hängt an jeden PR eine Preview-URL)
+   und mergen; das Issue schließt sich automatisch über `Closes #<nr>`.
+4. **Auto-Deploy** – Vercel deployt jeden Push auf `main` in Produktion.
 
 Zusätzlich prüft [ci.yml](.github/workflows/ci.yml) Tests und Build bei jedem
 Pull Request.
 
-## Einmaliges Setup (Checkliste)
-
-- [ ] Repo auf GitHub anlegen und pushen (öffentlich, wegen GitHub Pages).
-- [ ] Claude GitHub App installieren: im Claude-Code-Terminal
-      `/install-github-app` ausführen (empfohlen) oder manuell über
-      <https://github.com/apps/claude> – dabei nur dieses Repository freigeben.
-- [ ] Ein Secret im Repo hinterlegen (Settings → Secrets and variables →
-      Actions): `ANTHROPIC_API_KEY` **oder** `CLAUDE_CODE_OAUTH_TOKEN`
-      (letzteres per `claude setup-token` bei Pro/Max-Abo –
-      `/install-github-app` erledigt das automatisch mit).
-- [ ] GitHub Pages aktivieren: Settings → Pages → Source: **GitHub Actions**.
-- [ ] Testlauf: ein erstes Issue anlegen.
-
 ## Tech-Stack
 
-Noch nicht festgelegt – Ausgangspunkt ist statisches HTML
-([index.html](index.html)). Der Stack wird per Issue entschieden; die
-Workflows erkennen ein Node-Projekt (package.json) automatisch.
+- [Next.js 16](https://nextjs.org) (App Router, TypeScript, Tailwind CSS)
+- [Supabase](https://supabase.com) – Auth + Postgres
+- [Vitest](https://vitest.dev) + Testing Library – Tests
+- [Vercel](https://vercel.com) – Hosting/Deployment
+- Geplant: Stripe für Subscriptions/Paywall
 
-## Version
+## Lokal entwickeln
 
-Der aktuelle Versionsstand wird im Footer von [index.html](index.html)
-angezeigt. Bei Änderungen, die eine neue Version rechtfertigen, wird die
-Versionsnummer dort manuell nach [SemVer](https://semver.org/lang/de/)
-hochgezählt.
+```bash
+npm install
+cp .env.example .env.local   # Supabase-Werte eintragen
+npm run dev                  # http://localhost:3000
+npm test                     # Tests
+npm run build                # Produktions-Build
+```
+
+## Einmaliges Setup (Checkliste)
+
+- [x] Repo auf GitHub, Claude GitHub App + `CLAUDE_CODE_OAUTH_TOKEN`-Secret
+- [ ] Supabase-Projekt anlegen (<https://supabase.com>), URL + Anon-Key aus
+      Project Settings → API kopieren
+- [ ] Vercel-Projekt anlegen (<https://vercel.com>): "Import Git Repository"
+      → dieses Repo wählen (Next.js wird automatisch erkannt)
+- [ ] In Vercel die Env-Vars `NEXT_PUBLIC_SUPABASE_URL` und
+      `NEXT_PUBLIC_SUPABASE_ANON_KEY` setzen (siehe `.env.example`)

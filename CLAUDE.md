@@ -5,28 +5,44 @@ Ticket, das von Claude (via GitHub Action) umgesetzt wird.
 
 ## Tech-Stack
 
-Der Stack ist noch **nicht festgelegt**. Bis dahin gilt:
-- Keine Frameworks oder Build-Tools einführen, solange kein Issue das
-  ausdrücklich verlangt.
-- Statisches HTML/CSS/JS ist der Ausgangspunkt (`index.html` im Root).
-- Wird per Issue ein Stack festgelegt, diesen Abschnitt aktualisieren.
+- **Next.js 16** (App Router, TypeScript, Tailwind CSS 4), Quellcode unter `src/`
+- **Supabase** für Auth und Postgres-Datenbank
+  (Client-Helper: `src/lib/supabase/client.ts` für Client Components,
+  `src/lib/supabase/server.ts` für Server Components/Actions/Route Handler)
+- **Vitest** + Testing Library für Tests (`*.test.tsx` neben der Komponente)
+- **Deployment: Vercel** – deployt automatisch bei Push auf `main`;
+  jeder PR bekommt eine Preview-URL. Es gibt KEINEN Deploy-Workflow im Repo.
+- Geplant (noch nicht eingerichtet): Stripe für Subscriptions/Paywall.
+
+## Befehle
+
+- `npm run dev` – Dev-Server
+- `npm test` – Tests (Vitest, einmaliger Lauf)
+- `npm run build` – Produktions-Build (muss vor jedem PR fehlerfrei laufen)
+- `npm run lint` – ESLint
+
+## Umgebungsvariablen
+
+Siehe `.env.example`. Lokal in `.env.local` (nicht committen!), in CI/Vercel
+als Secrets/Env-Vars. Niemals echte Keys ins Repo schreiben. Neue Variablen
+immer auch in `.env.example` dokumentieren.
 
 ## Definition of Done (für jedes Issue)
 
 1. Anforderung vollständig implementiert.
-2. Tests geschrieben/aktualisiert und lokal grün (`npm test`, sobald ein
-   Node-Projekt existiert).
-3. Dokumentation aktualisiert (README.md bzw. docs/), wenn sich Verhalten,
+2. Tests geschrieben/aktualisiert, `npm test` grün.
+3. `npm run build` läuft fehlerfrei.
+4. Dokumentation aktualisiert (README.md bzw. docs/), wenn sich Verhalten,
    Bedienung oder Setup ändern.
-4. Pull Request gegen `main` mit klarer Beschreibung und `Closes #<nr>`.
+5. Pull Request gegen `main` mit klarer Beschreibung und `Closes #<nr>`.
 
 ## Konventionen
 
 - Branches: `claude/issue-<nr>-<kurzbeschreibung>`
 - Kein direkter Push auf `main` – alles läuft über Pull Requests.
-- Deployment: automatisch via GitHub Pages bei jedem Merge auf `main`
-  (siehe `.github/workflows/deploy.yml`). Der Build muss dafür in `dist/`
-  oder `build/` landen – oder das Root bleibt direkt deploybar.
+- Server-Logik (Auth-Checks, Premium-Gates, DB-Zugriffe) gehört auf die
+  Server-Seite (Server Components, Route Handler, Middleware) – niemals
+  sicherheitsrelevante Prüfungen nur im Client.
 - Sprache: UI-Texte und Doku auf Deutsch, Code/Kommentare auf Englisch.
 
 ## Unklare Issues
