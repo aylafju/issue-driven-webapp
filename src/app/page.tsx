@@ -33,9 +33,6 @@ export default async function Home() {
           <Link href="/login" className="underline">
             Anmelden
           </Link>
-          <Link href="/signup" className="underline">
-            Registrieren
-          </Link>
         </div>
       )}
       <VersionFooter />

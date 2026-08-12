@@ -1,14 +1,19 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
+import { vi } from "vitest";
 
-const signInWithPasswordMock = vi.fn();
+const signInWithOAuthMock = vi.fn();
 
 vi.mock("@/lib/supabase/server", () => ({
   createClient: vi.fn(async () => ({
-    auth: { signInWithPassword: signInWithPasswordMock },
+    auth: { signInWithOAuth: signInWithOAuthMock },
   })),
 }));
 
-import { login } from "./actions";
+vi.mock("next/headers", () => ({
+  headers: vi.fn(async () => new Map([["origin", "https://example.com"]])),
+}));
+
+import { loginWithProvider } from "./actions";
 
 function redirectTarget(error: unknown): string {
   const digest = (error as { digest?: string }).digest ?? "";
@@ -21,36 +26,89 @@ function makeFormData(fields: Record<string, string>) {
   return formData;
 }
 
-describe("login-Action", () => {
+describe("loginWithProvider-Action", () => {
   beforeEach(() => {
-    signInWithPasswordMock.mockReset();
+    signInWithOAuthMock.mockReset();
   });
 
-  it("meldet mit E-Mail/Passwort an und leitet zur Startseite weiter", async () => {
-    signInWithPasswordMock.mockResolvedValue({ error: null });
+  it("startet den OAuth-Flow für Google und leitet zur Provider-URL weiter", async () => {
+    signInWithOAuthMock.mockResolvedValue({
+      data: { url: "https://accounts.google.com/o/oauth2/auth?foo=bar" },
+      error: null,
+    });
 
-    const error = await login(
-      makeFormData({ email: "test@example.com", password: "geheim123" }),
+    const error = await loginWithProvider(
+      makeFormData({ provider: "google" }),
     ).catch((e) => e);
 
-    expect(signInWithPasswordMock).toHaveBeenCalledWith({
-      email: "test@example.com",
-      password: "geheim123",
+    expect(signInWithOAuthMock).toHaveBeenCalledWith({
+      provider: "google",
+      options: { redirectTo: expect.stringContaining("/auth/callback") },
     });
-    expect(redirectTarget(error)).toBe("/");
+    expect(redirectTarget(error)).toBe(
+      "https://accounts.google.com/o/oauth2/auth?foo=bar",
+    );
   });
 
-  it("leitet bei falschen Anmeldedaten mit Fehlermeldung zurück zu /login", async () => {
-    signInWithPasswordMock.mockResolvedValue({
-      error: { message: "Invalid login credentials" },
+  it("startet den OAuth-Flow für Facebook", async () => {
+    signInWithOAuthMock.mockResolvedValue({
+      data: { url: "https://www.facebook.com/dialog/oauth?foo=bar" },
+      error: null,
     });
 
-    const error = await login(
-      makeFormData({ email: "test@example.com", password: "falsch" }),
+    const error = await loginWithProvider(
+      makeFormData({ provider: "facebook" }),
+    ).catch((e) => e);
+
+    expect(signInWithOAuthMock).toHaveBeenCalledWith({
+      provider: "facebook",
+      options: { redirectTo: expect.stringContaining("/auth/callback") },
+    });
+    expect(redirectTarget(error)).toBe(
+      "https://www.facebook.com/dialog/oauth?foo=bar",
+    );
+  });
+
+  it("startet den OAuth-Flow für X (Twitter)", async () => {
+    signInWithOAuthMock.mockResolvedValue({
+      data: { url: "https://api.twitter.com/oauth/authenticate?foo=bar" },
+      error: null,
+    });
+
+    const error = await loginWithProvider(
+      makeFormData({ provider: "twitter" }),
+    ).catch((e) => e);
+
+    expect(signInWithOAuthMock).toHaveBeenCalledWith({
+      provider: "twitter",
+      options: { redirectTo: expect.stringContaining("/auth/callback") },
+    });
+    expect(redirectTarget(error)).toBe(
+      "https://api.twitter.com/oauth/authenticate?foo=bar",
+    );
+  });
+
+  it("leitet bei unbekanntem Provider mit Fehlermeldung zurück zu /login", async () => {
+    const error = await loginWithProvider(
+      makeFormData({ provider: "not-a-provider" }),
+    ).catch((e) => e);
+
+    expect(signInWithOAuthMock).not.toHaveBeenCalled();
+    expect(redirectTarget(error)).toContain("/login?error=");
+  });
+
+  it("leitet bei einem Supabase-Fehler mit Fehlermeldung zurück zu /login", async () => {
+    signInWithOAuthMock.mockResolvedValue({
+      data: { url: null },
+      error: { message: "provider is not enabled" },
+    });
+
+    const error = await loginWithProvider(
+      makeFormData({ provider: "google" }),
     ).catch((e) => e);
 
     const target = redirectTarget(error);
     expect(target).toContain("/login?error=");
-    expect(decodeURIComponent(target)).toContain("falsch");
+    expect(decodeURIComponent(target)).toContain("nicht verfügbar");
   });
 });

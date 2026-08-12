@@ -48,15 +48,20 @@ npm run build                # Produktions-Build
       → dieses Repo wählen (Next.js wird automatisch erkannt)
 - [ ] In Vercel die Env-Vars `NEXT_PUBLIC_SUPABASE_URL` und
       `NEXT_PUBLIC_SUPABASE_ANON_KEY` setzen (siehe `.env.example`)
-- [ ] Im Supabase-Dashboard unter Authentication → Email Templates die
-      Vorlage "Confirm signup" anpassen, damit der Bestätigungslink auf
-      `/auth/confirm` zeigt:
-      `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=signup&next=/`
+- [ ] Im Supabase-Dashboard unter Authentication → Sign In / Providers die
+      OAuth-Provider **Google**, **Facebook** und **X (Twitter)** aktivieren
+      und mit Client-ID/Secret des jeweiligen Anbieters hinterlegen
+- [ ] Bei jedem Provider (Google Cloud Console, Facebook App, X Developer
+      Portal) als Redirect-/Callback-URL die von Supabase angezeigte
+      Callback-URL eintragen (`https://<project-ref>.supabase.co/auth/v1/callback`)
 
 ## Auth
 
-Login (`/login`) und Registrierung (`/signup`) laufen über Supabase Auth
-(E-Mail + Passwort). Eingeloggte User sehen auf der Startseite ihre
-E-Mail-Adresse und einen Logout-Button. `src/proxy.ts` refresht bei jedem
-Request die Supabase-Session, damit Server Components immer eine aktuelle
-Auth-Session sehen.
+Login (`/login`) läuft ausschließlich über Supabase Auth mit den OAuth-
+Providern **Google**, **Facebook** und **X**. Die Login-Seite zeigt ein
+Popup mit der Auswahl des Providers; nach der Anmeldung beim Provider leitet
+`/auth/callback` zurück auf die Startseite. E-Mail/Passwort-Login und
+-Registrierung gibt es nicht mehr. Eingeloggte User sehen auf der Startseite
+ihre E-Mail-Adresse und einen Logout-Button. `src/proxy.ts` refresht bei
+jedem Request die Supabase-Session, damit Server Components immer eine
+aktuelle Auth-Session sehen.

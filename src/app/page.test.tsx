@@ -32,13 +32,10 @@ describe("Startseite", () => {
     ).toBeInTheDocument();
   });
 
-  it("zeigt Anmelden- und Registrieren-Links, wenn niemand angemeldet ist", async () => {
+  it("zeigt einen Anmelden-Link, wenn niemand angemeldet ist", async () => {
     getUserMock.mockResolvedValue({ data: { user: null } });
     render(await Home());
     expect(screen.getByRole("link", { name: /anmelden/i })).toBeInTheDocument();
-    expect(
-      screen.getByRole("link", { name: /registrieren/i }),
-    ).toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: /abmelden/i }),
     ).not.toBeInTheDocument();
