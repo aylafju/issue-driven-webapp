@@ -20,7 +20,7 @@ export function VersionFooter() {
   );
 
   return (
-    <footer className="fixed bottom-0 w-full p-3 text-center text-xs text-neutral-400">
+    <footer className="fixed bottom-0 w-full p-3 text-center text-xs text-muted-foreground">
       Automatisch entwickelt mit Claude{date ? ` – Stand: ${date}` : ""}
     </footer>
   );

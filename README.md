@@ -24,6 +24,8 @@ Pull Request.
 ## Tech-Stack
 
 - [Next.js 16](https://nextjs.org) (App Router, TypeScript, Tailwind CSS)
+- [shadcn/ui](https://ui.shadcn.com) – Basiskomponenten, verdrahtet auf die
+  zentralen Design-Tokens (siehe [Design-System](#design-system))
 - [Supabase](https://supabase.com) – Auth + Postgres
 - [Vitest](https://vitest.dev) + Testing Library – Tests
 - [Vercel](https://vercel.com) – Hosting/Deployment
@@ -72,3 +74,32 @@ Angemeldete User werden von dort automatisch zur App-View (`/app`)
 weitergeleitet. Die App-View ist nur für angemeldete User erreichbar – ohne
 gültige Session leitet sie zurück zu `/login`. Dort sehen eingeloggte User
 ihre E-Mail-Adresse und einen Logout-Button.
+
+## Design-System
+
+Das UI ist dark-first und orientiert sich an etablierten Trading-Tools
+(Referenz: [TradingView](https://www.tradingview.com)) – dunkle, leicht
+bläuliche Anthrazit-Flächen, dezente Ränder statt starker Schatten und eine
+klare Akzentfarbe für Primäraktionen. Details und Regeln für neuen Code
+stehen in [CLAUDE.md](CLAUDE.md#design-system).
+
+- **Tokens ändern**: Alle Farben, `--radius` und Schriftfamilien sind als
+  CSS-Variablen zentral in [`src/app/globals.css`](src/app/globals.css)
+  definiert (`:root` = helles Theme, vorbereitet aber noch nicht per Toggle
+  erreichbar; `.dark` = dunkles Theme, aktueller Default). Das komplette
+  Farbschema der App lässt sich austauschen, indem ausschließlich diese
+  Werte geändert werden – kein Code außerhalb dieser Datei muss angefasst
+  werden.
+- **Gewinn/Verlust**: Die Tokens `success`/`success-foreground` (positiv,
+  grün) und `danger`/`danger-foreground` (negativ, rot) sind eigene
+  semantische Tokens, siehe Beispiel in
+  [`src/app/app/page.tsx`](src/app/app/page.tsx).
+- **Neue shadcn-Komponente hinzufügen**:
+  ```bash
+  npx shadcn@latest add <component>
+  ```
+  Die Komponente landet unter `src/components/ui/` und ist bereits auf die
+  Tokens aus `globals.css` verdrahtet.
+- **Prüfen**: `npm run check:colors` meldet rohe Tailwind-Farbklassen
+  (`bg-blue-500`, …) oder Hex-Werte (`#fff`, …) außerhalb von
+  `globals.css`/`components/ui/`; läuft auch in [ci.yml](.github/workflows/ci.yml).

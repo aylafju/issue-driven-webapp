@@ -1,26 +1,172 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
+/*
+ * Zentrale Design-Tokens. Alles im UI referenziert ausschließlich diese
+ * semantischen Variablen (nie rohe Farbwerte/-klassen) – das Farbschema der
+ * gesamten App lässt sich komplett austauschen, indem nur die Werte hier
+ * geändert werden. Siehe CLAUDE.md, Abschnitt "Design-System".
+ */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-danger: var(--danger);
+  --color-danger-foreground: var(--danger-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --font-heading: var(--font-sans);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --radius: 0.5rem;
+
+  /*
+   * Helles Theme – vorbereitet mit denselben Token-Namen wie das dunkle
+   * Theme, aktuell aber noch nicht per Toggle erreichbar (die App startet
+   * immer dunkel, siehe .dark unten).
+   */
+  color-scheme: light;
+
+  --background: #f4f6fa;
+  --foreground: #10151f;
+  --card: #ffffff;
+  --card-foreground: #10151f;
+  --popover: #ffffff;
+  --popover-foreground: #10151f;
+  --primary: #1d4ed8;
+  --primary-foreground: #f8fafc;
+  --secondary: #edf1f7;
+  --secondary-foreground: #10151f;
+  --muted: #edf1f7;
+  --muted-foreground: #5b6472;
+  --accent: #e4eaf5;
+  --accent-foreground: #10151f;
+  --destructive: #dc2626;
+  --destructive-foreground: #fef2f2;
+  --success: #15803d;
+  --success-foreground: #f0fdf4;
+  --danger: #dc2626;
+  --danger-foreground: #fef2f2;
+  --border: #dde3ec;
+  --input: #dde3ec;
+  --ring: #1d4ed8;
+  --chart-1: #1d4ed8;
+  --chart-2: #15803d;
+  --chart-3: #dc2626;
+  --chart-4: #a855f7;
+  --chart-5: #f59e0b;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #10151f;
+  --sidebar-primary: #1d4ed8;
+  --sidebar-primary-foreground: #f8fafc;
+  --sidebar-accent: #edf1f7;
+  --sidebar-accent-foreground: #10151f;
+  --sidebar-border: #dde3ec;
+  --sidebar-ring: #1d4ed8;
+}
+
+/*
+ * Dunkles Theme – Default der App. Orientierung an Trading-Tools
+ * (Referenz: TradingView): sehr dunkle, leicht bläuliche Anthrazit-Flächen
+ * (kein reines Schwarz), dezente Abstufung Hintergrund → Panel/Card → Rand,
+ * eine klare Akzentfarbe (Blau) für Primäraktionen/aktive Zustände sowie
+ * eigene success-/danger-Tokens für Gewinn/Verlust-Signale.
+ */
+.dark {
+  color-scheme: dark;
+
+  --background: #0d1017;
+  --foreground: #d1d4dc;
+  --card: #161a23;
+  --card-foreground: #d1d4dc;
+  --popover: #161a23;
+  --popover-foreground: #d1d4dc;
+  --primary: #2f6fed;
+  --primary-foreground: #f5f8ff;
+  --secondary: #1c212c;
+  --secondary-foreground: #d1d4dc;
+  --muted: #1a1f29;
+  --muted-foreground: #868d9c;
+  --accent: #1c212c;
+  --accent-foreground: #d1d4dc;
+  --destructive: #ef5350;
+  --destructive-foreground: #fff5f5;
+  --success: #26a69a;
+  --success-foreground: #06201c;
+  --danger: #ef5350;
+  --danger-foreground: #2a0908;
+  --border: #232733;
+  --input: #232733;
+  --ring: #2f6fed;
+  --chart-1: #2f6fed;
+  --chart-2: #26a69a;
+  --chart-3: #ef5350;
+  --chart-4: #a78bfa;
+  --chart-5: #f5a623;
+  --sidebar: #10141c;
+  --sidebar-foreground: #d1d4dc;
+  --sidebar-primary: #2f6fed;
+  --sidebar-primary-foreground: #f5f8ff;
+  --sidebar-accent: #1c212c;
+  --sidebar-accent-foreground: #d1d4dc;
+  --sidebar-border: #232733;
+  --sidebar-ring: #2f6fed;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
 }

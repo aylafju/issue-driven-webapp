@@ -40,6 +40,10 @@ jobs:
         if: steps.detect.outputs.node == 'true'
         run: npm test --if-present
 
+      - name: Design-Tokens prüfen (keine rohen Farbklassen/Hex-Werte)
+        if: steps.detect.outputs.node == 'true'
+        run: npm run check:colors --if-present
+
       - name: Build prüfen
         if: steps.detect.outputs.node == 'true'
         run: npm run build --if-present
