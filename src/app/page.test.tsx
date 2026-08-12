@@ -11,6 +11,11 @@ vi.mock("@/lib/supabase/server", () => ({
 
 import Home from "./page";
 
+function redirectTarget(error: unknown): string {
+  const digest = (error as { digest?: string }).digest ?? "";
+  return digest.split(";").slice(2, -2).join(";");
+}
+
 describe("Startseite", () => {
   beforeEach(() => {
     getUserMock.mockReset();
@@ -36,22 +41,15 @@ describe("Startseite", () => {
     getUserMock.mockResolvedValue({ data: { user: null } });
     render(await Home());
     expect(screen.getByRole("link", { name: /anmelden/i })).toBeInTheDocument();
-    expect(
-      screen.queryByRole("button", { name: /abmelden/i }),
-    ).not.toBeInTheDocument();
   });
 
-  it("zeigt E-Mail-Adresse und Logout-Button für angemeldete User", async () => {
+  it("leitet angemeldete User zur App-View weiter", async () => {
     getUserMock.mockResolvedValue({
       data: { user: { email: "test@example.com" } },
     });
-    render(await Home());
-    expect(screen.getByText(/test@example\.com/)).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /abmelden/i }),
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByRole("link", { name: /anmelden/i }),
-    ).not.toBeInTheDocument();
+
+    const error = await Home().catch((e) => e);
+
+    expect(redirectTarget(error)).toBe("/app");
   });
 });
