@@ -12,11 +12,11 @@ describe("Login-Seite", () => {
       screen.getByRole("button", { name: /mit google anmelden/i }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /mit facebook anmelden/i }),
-    ).toBeInTheDocument();
+      screen.queryByRole("button", { name: /mit facebook anmelden/i }),
+    ).not.toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /mit x anmelden/i }),
-    ).toBeInTheDocument();
+      screen.queryByRole("button", { name: /mit x anmelden/i }),
+    ).not.toBeInTheDocument();
   });
 
   it("zeigt keine E-Mail- oder Passwort-Felder mehr", async () => {

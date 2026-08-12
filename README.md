@@ -48,17 +48,17 @@ npm run build                # Produktions-Build
       → dieses Repo wählen (Next.js wird automatisch erkannt)
 - [ ] In Vercel die Env-Vars `NEXT_PUBLIC_SUPABASE_URL` und
       `NEXT_PUBLIC_SUPABASE_ANON_KEY` setzen (siehe `.env.example`)
-- [ ] Im Supabase-Dashboard unter Authentication → Sign In / Providers die
-      OAuth-Provider **Google**, **Facebook** und **X (Twitter)** aktivieren
-      und mit Client-ID/Secret des jeweiligen Anbieters hinterlegen
-- [ ] Bei jedem Provider (Google Cloud Console, Facebook App, X Developer
-      Portal) als Redirect-/Callback-URL die von Supabase angezeigte
-      Callback-URL eintragen (`https://<project-ref>.supabase.co/auth/v1/callback`)
+- [ ] Im Supabase-Dashboard unter Authentication → Sign In / Providers den
+      OAuth-Provider **Google** aktivieren und mit Client-ID/Secret des
+      Anbieters hinterlegen
+- [ ] Bei Google Cloud Console als Redirect-/Callback-URL die von Supabase
+      angezeigte Callback-URL eintragen
+      (`https://<project-ref>.supabase.co/auth/v1/callback`)
 
 ## Auth
 
-Login (`/login`) läuft ausschließlich über Supabase Auth mit den OAuth-
-Providern **Google**, **Facebook** und **X**. Die Login-Seite zeigt ein
+Login (`/login`) läuft ausschließlich über Supabase Auth mit dem OAuth-
+Provider **Google**. Die Login-Seite zeigt ein
 Popup mit der Auswahl des Providers; nach der Anmeldung beim Provider leitet
 `/auth/callback` zurück auf die Startseite. E-Mail/Passwort-Login und
 -Registrierung gibt es nicht mehr. Eingeloggte User sehen auf der Startseite

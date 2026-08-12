@@ -50,44 +50,6 @@ describe("loginWithProvider-Action", () => {
     );
   });
 
-  it("startet den OAuth-Flow für Facebook", async () => {
-    signInWithOAuthMock.mockResolvedValue({
-      data: { url: "https://www.facebook.com/dialog/oauth?foo=bar" },
-      error: null,
-    });
-
-    const error = await loginWithProvider(
-      makeFormData({ provider: "facebook" }),
-    ).catch((e) => e);
-
-    expect(signInWithOAuthMock).toHaveBeenCalledWith({
-      provider: "facebook",
-      options: { redirectTo: expect.stringContaining("/auth/callback") },
-    });
-    expect(redirectTarget(error)).toBe(
-      "https://www.facebook.com/dialog/oauth?foo=bar",
-    );
-  });
-
-  it("startet den OAuth-Flow für X (Twitter)", async () => {
-    signInWithOAuthMock.mockResolvedValue({
-      data: { url: "https://api.twitter.com/oauth/authenticate?foo=bar" },
-      error: null,
-    });
-
-    const error = await loginWithProvider(
-      makeFormData({ provider: "twitter" }),
-    ).catch((e) => e);
-
-    expect(signInWithOAuthMock).toHaveBeenCalledWith({
-      provider: "twitter",
-      options: { redirectTo: expect.stringContaining("/auth/callback") },
-    });
-    expect(redirectTarget(error)).toBe(
-      "https://api.twitter.com/oauth/authenticate?foo=bar",
-    );
-  });
-
   it("leitet bei unbekanntem Provider mit Fehlermeldung zurück zu /login", async () => {
     const error = await loginWithProvider(
       makeFormData({ provider: "not-a-provider" }),
@@ -95,6 +57,19 @@ describe("loginWithProvider-Action", () => {
 
     expect(signInWithOAuthMock).not.toHaveBeenCalled();
     expect(redirectTarget(error)).toContain("/login?error=");
+  });
+
+  it("leitet bei entfernten Anbietern (Facebook/X) mit Fehlermeldung zurück zu /login", async () => {
+    const facebookError = await loginWithProvider(
+      makeFormData({ provider: "facebook" }),
+    ).catch((e) => e);
+    const twitterError = await loginWithProvider(
+      makeFormData({ provider: "twitter" }),
+    ).catch((e) => e);
+
+    expect(signInWithOAuthMock).not.toHaveBeenCalled();
+    expect(redirectTarget(facebookError)).toContain("/login?error=");
+    expect(redirectTarget(twitterError)).toContain("/login?error=");
   });
 
   it("leitet bei einem Supabase-Fehler mit Fehlermeldung zurück zu /login", async () => {
