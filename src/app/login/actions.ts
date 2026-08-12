@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { mapAuthError } from "@/lib/supabase/errors";
 
 // Anbieter, die auf der Login-Seite zur Auswahl stehen (siehe page.tsx).
-const ALLOWED_PROVIDERS = ["google", "facebook", "twitter"] as const;
+const ALLOWED_PROVIDERS = ["google"] as const;
 
 function isAllowedProvider(value: string): value is Provider {
   return (ALLOWED_PROVIDERS as readonly string[]).includes(value);

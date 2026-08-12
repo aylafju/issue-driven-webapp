@@ -1,10 +1,6 @@
 import { loginWithProvider } from "./actions";
 
-const PROVIDERS = [
-  { id: "google", label: "Google" },
-  { id: "facebook", label: "Facebook" },
-  { id: "twitter", label: "X" },
-] as const;
+const PROVIDERS = [{ id: "google", label: "Google" }] as const;
 
 export default async function LoginPage({
   searchParams,
