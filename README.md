@@ -60,8 +60,15 @@ npm run build                # Produktions-Build
 Login (`/login`) läuft ausschließlich über Supabase Auth mit dem OAuth-
 Provider **Google**. Die Login-Seite zeigt ein
 Popup mit der Auswahl des Providers; nach der Anmeldung beim Provider leitet
-`/auth/callback` zurück auf die Startseite. E-Mail/Passwort-Login und
--Registrierung gibt es nicht mehr. Eingeloggte User sehen auf der Startseite
-ihre E-Mail-Adresse und einen Logout-Button. `src/proxy.ts` refresht bei
+`/auth/callback` zur geschützten App-View (`/app`) weiter. E-Mail/Passwort-
+Login und -Registrierung gibt es nicht mehr. `src/proxy.ts` refresht bei
 jedem Request die Supabase-Session, damit Server Components immer eine
 aktuelle Auth-Session sehen.
+
+## Homepage & App-View
+
+Die Startseite (`/`) ist eine öffentliche Landingpage mit Anmelden-Link.
+Angemeldete User werden von dort automatisch zur App-View (`/app`)
+weitergeleitet. Die App-View ist nur für angemeldete User erreichbar – ohne
+gültige Session leitet sie zurück zu `/login`. Dort sehen eingeloggte User
+ihre E-Mail-Adresse und einen Logout-Button.

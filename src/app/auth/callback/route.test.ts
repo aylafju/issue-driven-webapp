@@ -33,6 +33,17 @@ describe("GET /auth/callback", () => {
     expect(redirectTarget(error)).toBe("/");
   });
 
+  it("leitet ohne next-Parameter zur App-View weiter", async () => {
+    exchangeCodeForSessionMock.mockResolvedValue({ error: null });
+    const request = new NextRequest(
+      "https://example.com/auth/callback?code=abc123",
+    );
+
+    const error = await GET(request).catch((e) => e);
+
+    expect(redirectTarget(error)).toBe("/app");
+  });
+
   it("leitet bei fehlerhaftem Code zu /login mit Fehlermeldung", async () => {
     exchangeCodeForSessionMock.mockResolvedValue({
       error: { message: "invalid code" },
