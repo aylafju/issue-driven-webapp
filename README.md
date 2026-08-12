@@ -48,3 +48,15 @@ npm run build                # Produktions-Build
       → dieses Repo wählen (Next.js wird automatisch erkannt)
 - [ ] In Vercel die Env-Vars `NEXT_PUBLIC_SUPABASE_URL` und
       `NEXT_PUBLIC_SUPABASE_ANON_KEY` setzen (siehe `.env.example`)
+- [ ] Im Supabase-Dashboard unter Authentication → Email Templates die
+      Vorlage "Confirm signup" anpassen, damit der Bestätigungslink auf
+      `/auth/confirm` zeigt:
+      `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=signup&next=/`
+
+## Auth
+
+Login (`/login`) und Registrierung (`/signup`) laufen über Supabase Auth
+(E-Mail + Passwort). Eingeloggte User sehen auf der Startseite ihre
+E-Mail-Adresse und einen Logout-Button. `src/proxy.ts` refresht bei jedem
+Request die Supabase-Session, damit Server Components immer eine aktuelle
+Auth-Session sehen.
